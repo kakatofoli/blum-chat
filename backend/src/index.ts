@@ -7,22 +7,21 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { getSession } from 'next-auth/react';
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import https from 'https';
-import fs from 'fs';
+import http from 'http';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import * as dotenv from 'dotenv';
 import { GraphQLContext, Session } from './util/types';
 
-const httpsOptions = {
-  cert: fs.readFileSync('C:\\Users\\kaiqu\\Desktop\\comunicator\\backend\\ssl\\certs\\blumchat.com.pem'),
-  key: fs.readFileSync('C:\\Users\\kaiqu\\Desktop\\comunicator\\backend\\ssl\\certs\\blumchat.com.key')
-}
+// const httpsOptions = {
+//   cert: fs.readFileSync('C:\\Users\\kaiqu\\Desktop\\comunicator\\backend\\ssl\\certs\\blumchat.com.pem'),
+//   key: fs.readFileSync('C:\\Users\\kaiqu\\Desktop\\comunicator\\backend\\ssl\\certs\\blumchat.com.key')
+// }
 
 async function startApolloServer() {
   dotenv.config();
   const app = express();
-  const httpServer = https.createServer(httpsOptions, app);
+  const httpServer = http.createServer(app);
 
   const schema = makeExecutableSchema({
     typeDefs,
@@ -54,7 +53,7 @@ async function startApolloServer() {
   await server.start();
   server.applyMiddleware({ app, cors: corsOptions });
   await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at https://localhost:4000${server.graphqlPath}`);
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
 
 startApolloServer().catch((err) => console.log(err));
